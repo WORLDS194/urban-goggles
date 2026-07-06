@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oops! Whimsy Me!</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Bubbles', sans-serif;
+            background: linear-gradient(235deg, #7ef08a 0%, #7bcfe8 100%); /* Your green to blue gradient */
+            color: #1e293b;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .welcome-box {
+            max-width: 500px;
+            background-color: #ffffff;
+            border: 4px solid #000; /* Your clean black border */
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(244, 63, 94, 0.2);
+        }
+
+        h1 {
+            color: #f43f5e;
+            font-size: 38px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            transform: rotate(-2px);
+        }
+
+        p {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .file-label {
+            display: inline-block;
+            background-color: #28b6d4;
+            color: white;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .file-label:hover {
+            background-color: #0891b2;
+            transform: scale(1.05);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #resetBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #cbd5e1;
+            color: #475569;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            z-index: 9999;
+        }
+        
+        #resetBtn:hover {
+            background: #f43f5e;
+            color: white;
+        }
+
+        #contentViewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setupScreen" class="welcome-container">
+        <div class="welcome-box">
+            <h1>Oops! Whimsy Me! ✨</h1>
+            <p>
+                Welcome! Want to own this exact web domain? 🎈<br><br>
+                Just upload your own HTML file right here. It will immediately transform into your personal site—exclusively visible on your computer!
+            </p>
+            <label class="file-label">
+                Pick Your HTML File
+                <input type="file" id="fileImporter" accept=".html" onchange="handleFileImport(this)">
+            </label>
+        </div>
+    </div>
+
+    <button id="resetBtn" onclick="clearStoredSite()">Change My Site</button>
+
+    <iframe id="contentViewer" title="Whimsy Me Custom View"></iframe>
+
+    <script>
+        window.onload = function() {
+            const savedHTML = localStorage.getItem('userManagementSite');
+            if (savedHTML) {
+                renderSite(savedHTML);
+            }
+        };
+
+        // FIXED FUNCTION
+        function handleFileImport(input) {
+            // Target the specific first file within the array list [0]
+            const file = input.files[0]; 
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const htmlContent = e.target.result;
+                localStorage.setItem('userManagementSite', htmlContent);
+                renderSite(htmlContent);
+            };
+            reader.readAsText(file); // Successfully processes the Blob file object now!
+        }
+
+        document.getElementById('fileImporter').addEventListener('change', function() {
+            handleFileImport(this);
+        });
+
+        function renderSite(htmlData) {
+            const setupScreen = document.getElementById('setupScreen');
+            const viewer = document.getElementById('contentViewer');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            setupScreen.style.display = 'none';
+            viewer.style.display = 'block';
+            resetBtn.style.display = 'block';
+            
+            const doc = viewer.contentDocument || viewer.contentWindow.document;
+            doc.open();
+            doc.write(htmlData);
+            doc.close();
+        }
+
+        function clearStoredSite() {
+            if (confirm("Want to clear your custom site and start over?")) {
+                localStorage.removeItem('userManagementSite');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
